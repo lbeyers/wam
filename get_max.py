@@ -2,6 +2,7 @@ from os import listdir
 from pyquery import PyQuery as pq
 import json
 import csv 
+from lxml.etree import XMLSyntaxError
 
 all_files = listdir("fetched_data")
 all_files.sort()
@@ -29,10 +30,14 @@ for filename in filenames:
     if not day in data.keys():
         data[day] = {}
     with open("fetched_data/"+filename, "r") as f:
-        doc = pq(f.read())
-        #import pdb; pdb.set_trace()
-        temp = doc("#gpx_content table th font").eq(5).html()
-        temp = float(temp)
+        try:
+            doc = pq(f.read())
+            #import pdb; pdb.set_trace()
+            temp = doc("#gpx_content table th font").eq(5).html()
+            temp = float(temp)
+        except XMLSyntaxError:
+	    temp = 0.0
+	    print "Could not read ", filename
         data[day]["La Colline"] = temp
         print filename,temp
 
