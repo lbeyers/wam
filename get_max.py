@@ -118,12 +118,87 @@ for filename in filenames:
         print filename,temp
 
 
+import numpy
+
+#get the differences
+fieldnames = ['Date', 'La Colline', 'Maties', 'Accuweather', 'Yr.no', 'Weather.com', 'Time and Date', 'Weather Underground', 'Accuweather Difference', 'Yr.no Difference', 'Weather.com Difference', 'Time and Date Difference', 'Weather Underground Difference']
+dates = ['%s' % day for day in sorted([int(date) for date in data.keys()])]
+print dates
+#import pdb; pdb.set_trace()
+acc_diffs = []
+yr_diffs = []
+com_diffs = []
+tad_diffs = []
+wu_diffs = []
+for i in range(1,len(dates)-1):
+    this_day = dates[i]
+    next_day = dates[i+1]
+    difference = data[next_day]["Maties"] - data[this_day]["Accuweather"]
+    data[this_day]["Accuweather Difference"] = difference
+    acc_diffs.append(difference)
+    #print this_day, next_day, difference
+    difference = data[next_day]["Maties"] - data[this_day]["Yr.no"]
+    data[this_day]["Yr.no Difference"] = difference
+    yr_diffs.append(difference)
+    #print this_day, next_day, difference    
+    difference = data[next_day]["Maties"] - data[this_day]["Weather.com"]
+    data[this_day]["Weather.com Difference"] = difference
+    com_diffs.append(difference)
+    #print this_day, next_day, difference
+    difference = data[next_day]["Maties"] - data[this_day]["Time and Date"]
+    data[this_day]["Time and Date Difference"] = difference
+    tad_diffs.append(difference)
+    #print this_day, next_day, difference
+    difference = data[next_day]["Maties"] - data[this_day]["Weather Underground"]
+    data[this_day]["Weather Underground Difference"] = difference
+    wu_diffs.append(difference)
+    #print this_day, next_day, difference
+averages = []
+
+
+print averages
+
+#acc_ave = numpy.mean(acc_diffs)
+#print acc_ave
+#print numpy.std(acc_diffs)
+#print numpy.mean(yr_diffs)
+#print numpy.std(yr_diffs)
+#print numpy.mean(com_diffs)
+#print numpy.std(com_diffs)
+#print numpy.mean(tad_diffs)
+#print numpy.std(tad_diffs)
+#print numpy.mean(wu_diffs)
+#print numpy.std( wu_diffs)
+
+#print acc_diffs, yr_diffs, com_diffs, tad_diffs, wu_diffs
+
+
 with open('raw_data.csv', 'w') as csvfile:
-    fieldnames = ['Date', 'La Colline', 'Maties', 'Accuweather', 'Yr.no', 'Weather.com', 'Time and Date', 'Weather Underground']
+    
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
     writer.writeheader()
-    for day in sorted(data.keys()):
+    for day in dates:
         data[day]["Date"] = day
         writer.writerow(data[day])
+        print data[day]
+    
+    writer.writerow({
+        'Date': 'Average',
+	'Accuweather Difference': numpy.mean(acc_diffs),
+	'Yr.no Difference': numpy.mean(yr_diffs),
+	'Weather.com Difference': numpy.mean(com_diffs), 
+	'Time and Date Difference': numpy.mean(tad_diffs), 
+	'Weather Underground Difference': numpy.mean(wu_diffs)
+        })
 
+    writer.writerow({
+        'Date': 'Standard Deviation',
+	'Accuweather Difference': numpy.std(acc_diffs),
+	'Yr.no Difference': numpy.std(yr_diffs),
+	'Weather.com Difference': numpy.std(com_diffs), 
+	'Time and Date Difference': numpy.std(tad_diffs), 
+	'Weather Underground Difference': numpy.std(wu_diffs)
+        })
+
+        
